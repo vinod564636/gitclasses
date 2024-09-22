@@ -1,0 +1,98 @@
+{
+    "teams":[
+        {
+            "name":"development",
+            "resourceGroupName":"devrg",
+            "location":"eastus2",
+            "storageaccounts":[
+                {
+                    "storagename":"devstorabcjsonxyz01",
+                    "sku":"Standard_GRS",
+                    "accesstier" : "Hot",
+                    "containers" : [
+                        {
+                            "containername" : "testcontainer1",
+                            "permissions":"off"
+                        },
+                        {
+                            "containername" : "testcontainer2",
+                            "permissions":"off"
+                        }
+                        
+                    ]
+                },
+                {
+                    "storagename":"devstorabcjsonxyz02",
+                    "sku":"Standard_LRS",
+                    "accesstier" : "Hot",
+                    "containers" : [
+                        {
+                            "containername" : "testcontainer1",
+                            "permissions":"off"
+                        },
+                        {
+                            "containername" : "testcontainer2",
+                            "permissions":"off"
+                        }
+                        
+                    ]
+                }
+            ]
+        },
+        {
+            "name":"qa",
+            "resourceGroupName":"qarg",
+            "location":"westus",
+            "storageaccounts":[
+                {
+                    "storagename":"qastorabcjsonxyz01",
+                    "sku":"Standard_GRS",
+                    "accesstier" : "Hot",
+                    "containers" : [
+                        {
+                            "containername" : "testcontainer1",
+                            "permissions":"off"
+                        },
+                        {
+                            "containername" : "testcontainer2",
+                            "permissions":"off"
+                        }
+                        
+                    ]
+                },
+                {
+                    "storagename":"qastorabcjsonxyz02",
+                    "sku":"Standard_LRS",
+                    "accesstier" : "Hot",
+                    "containers" : [
+                        {
+                            "containername" : "testcontainer1",
+                            "permissions":"off"
+                        },
+                        {
+                            "containername" : "testcontainer2",
+                            "permissions":"off"
+                        }
+                        
+                    ]
+                },
+                {
+                    "storagename":"qastorabcjsonxyz03",
+                    "sku":"Standard_LRS",
+                    "accesstier" : "Hot",
+                    "containers" : [
+                        {
+                            "containername" : "testcontainer1",
+                            "permissions":"off"
+                        },
+                        {
+                            "containername" : "testcontainer2",
+                            "permissions":"off"
+                        }
+                        
+                    ]
+                }
+            ]
+        }
+    ]
+}
