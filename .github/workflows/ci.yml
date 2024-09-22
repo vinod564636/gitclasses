@@ -4,101 +4,63 @@ on:
   push:
     branches:
       - main
-{
-    "teams":[
-        {
-            "name":"development",
-            "resourceGroupName":"devrg",
-            "location":"eastus2",
-            "storageaccounts":[
-                {
-                    "storagename":"devstorabcjsonxyz01",
-                    "sku":"Standard_GRS",
-                    "accesstier" : "Hot",
-                    "containers" : [
-                        {
-                            "containername" : "testcontainer1",
-                            "permissions":"off"
-                        },
-                        {
-                            "containername" : "testcontainer2",
-                            "permissions":"off"
-                        }
-                        
-                    ]
-                },
-                {
-                    "storagename":"devstorabcjsonxyz02",
-                    "sku":"Standard_LRS",
-                    "accesstier" : "Hot",
-                    "containers" : [
-                        {
-                            "containername" : "testcontainer1",
-                            "permissions":"off"
-                        },
-                        {
-                            "containername" : "testcontainer2",
-                            "permissions":"off"
-                        }
-                        
-                    ]
-                }
-            ]
-        },
-        {
-            "name":"qa",
-            "resourceGroupName":"qarg",
-            "location":"westus",
-            "storageaccounts":[
-                {
-                    "storagename":"qastorabcjsonxyz01",
-                    "sku":"Standard_GRS",
-                    "accesstier" : "Hot",
-                    "containers" : [
-                        {
-                            "containername" : "testcontainer1",
-                            "permissions":"off"
-                        },
-                        {
-                            "containername" : "testcontainer2",
-                            "permissions":"off"
-                        }
-                        
-                    ]
-                },
-                {
-                    "storagename":"qastorabcjsonxyz02",
-                    "sku":"Standard_LRS",
-                    "accesstier" : "Hot",
-                    "containers" : [
-                        {
-                            "containername" : "testcontainer1",
-                            "permissions":"off"
-                        },
-                        {
-                            "containername" : "testcontainer2",
-                            "permissions":"off"
-                        }
-                        
-                    ]
-                },
-                {
-                    "storagename":"qastorabcjsonxyz03",
-                    "sku":"Standard_LRS",
-                    "accesstier" : "Hot",
-                    "containers" : [
-                        {
-                            "containername" : "testcontainer1",
-                            "permissions":"off"
-                        },
-                        {
-                            "containername" : "testcontainer2",
-                            "permissions":"off"
-                        }
-                        
-                    ]
-                }
-            ]
-        }
-    ]
-}
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js 14.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.x'
+
+      - name: npm install in Frontend
+        run: npm install
+        working-directory: Frontend
+
+      - name: Create .npmrc file
+        run: |
+          echo "registry=http://pkgs.dev.azure.com.IIoT-Solutions/safety-Suite/_packaging/TestAutomation/npm/registry/" >> $(Build.sourcesDirectory)/scr/.npmrc
+          echo "always-auth=true" >> $(Build.sourcesDirectory)/scr/.npmrc
+
+      - name: Authenticate npm
+        run: npm ci --registry $(artifact.npm.work)/.npmrc
+
+      - name: npm install in source directory
+        run: npm install
+        working-directory: ${{ github.workspace }}/scr
+
+      - name: Install Chromedriver
+        run: npm install chromedriver
+        working-directory: ${{ github.workspace }}/scr
+
+      - name: Run UI test
+        run: npm run ${{ github.event.inputs.testset }}
+        continue-on-error: true
+
+      - name: Validate test
+        run: npm run test.validate
+        working-directory: ${{ github.workspace }}/scr
+        continue-on-error: true
+
+      - name: Generate XML report
+        run: npm run test.xml
+        working-directory: ${{ github.workspace }}/scr
+        continue-on-error: true
+
+      - name: Publish test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test-Report
+          path: ${{ github.workspace }}/scr/.test-run/xml-reports/${{ github.event.inputs.xmlreport }}
+
+      - name: Publish Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test Reort
+          path: ${{ github.workspace }}/scr/.test-run/
+        if: ${{ success() && github.event_name != 'pull_request' }}
